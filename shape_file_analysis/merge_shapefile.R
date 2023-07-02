@@ -1,0 +1,7 @@
+setwd("C:\\Users\\ATilaye\\Documents\\01My_Docs\\01CIAT\\02Fertilizer\\digital_green\\final_june_22\\shape_dissolved\\new folder")
+shape <- list.files(path = ".", pattern = ".shp$", all.files = T)
+shape2 <- lapply(shape, readOGR)
+shapes <- rbind(shape2[[1]], shape2[[2]], shape2[[3]], shape2[[4]], shape2[[6]])
+plot(shapes)
+writeOGR(shapes, dsn = ".", layer = "merged_with_n_p", driver = "ESRI Shapefile")
+setwd("C:/")

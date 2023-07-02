@@ -1,0 +1,25 @@
+Error in unserialize(socklist[[n]]) : error reading from connection
+Calls: %dopar% ... recvOneData -> recvOneData.SOCKcluster -> unserialize
+Execution halted
+
+https://stackoverflow.com/questions/28503208/doparallel-error-in-r-error-in-serializedata-nodecon-error-writing-to-con
+
+free -g -h -t - display the amount of memory in gibibytes
+
+
+
+
+ncores = 112
+ram = 253GB
+ram/2 = ncores
+
+16 = 8
+16 = 8
+16 = 4 
+
+ncores <= ram
+n_cores <- int(detect_cores - 1)
+ncores > ram & < 2ram
+n_cores <- int(detect_cores/3)
+else
+int(detect_cores/6)

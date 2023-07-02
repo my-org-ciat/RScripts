@@ -1,0 +1,68 @@
+# ------------------------------------------------------------------------------
+# Fetches terra climate data based on the year, planting and harvesting date
+fetchTerraClimate <-
+  function(param,
+           aoi,csv, 
+           aoi_path = NULL,
+           csv_path = NULL) {
+    
+    library(AOI)
+    library(rgdal)
+    library(climateR)
+    library(sf)
+    library(raster)
+    library(dplyr)
+    
+# ------------------------------------------------------------------------------
+# aoi Layer and end date
+    file_name <- as.character(param)
+    aoi <- st_read(paste(dsn = aoi_path, layer = aoi, sep = "/"))
+    csv <- read.csv(file = paste(csv_path, csv, sep = "/"), header = TRUE, sep = ",")
+    # }
+    
+data <- 
+  dplyr::select (csv,
+                 "Region",
+                 "District",
+                 "Site",
+                 "Year",
+                 "Planting_date",
+                 "Harvesting_date")
+data$Year <- as.character(data$Year) 
+data$Year <- paste(data$Year, "01", "01", sep = "-")
+data$Year <- as.Date(data$Year)
+data2 <-
+  data %>% mutate(
+    plating_date2 = Year + Planting_date - 10,
+    harvesting_date2 = Year + Harvesting_date + 10
+  )
+data3 <- unique.data.frame(data2)
+start_date <- data3$plating_date2
+end_date <- data3$harvesting_date2
+# shape <- st_read("D:/tigray/tigray.shp")
+output <- list()
+for(i in 1:length(start_date)){
+  pout = getTerraClim(AOI = aoi,
+                        param = param,
+                        startDate = start_date[i],
+                        endDate = end_date[i])
+  pout <- pout[[1]]
+  output  <- append(output, pout)
+  for(j in 1:length(output)){
+    pout <- output[[j]]
+    writeRaster(
+      pout,
+    filename = paste(
+      paste(file_name, as.character(start_date[i]), sep = "_"),
+      as.character(end_date[i]),
+      sep = "_"
+    ),
+    format = "GTiff",
+    overwrite = TRUE
+   )
+  }
+}
+  }
+
+#Example
+fetchTerraClimate(param = "srad", aoi ="tigray_prj.shp",aoi_path = "D:/tigray",csv ="test_data.csv", csv_path = "D:/extract_TerraClim_data")
